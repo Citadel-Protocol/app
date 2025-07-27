@@ -1,8 +1,11 @@
 import { useReadContract } from 'wagmi';
 import { Address } from 'viem';
-import { ERC20_ABI } from '@/config/citadel-contracts';
+import { ERC20_ABI } from '@/abi/erc20';
+import { getTokenQueryEnabled } from '@/utils/contract-helpers';
 
 export function useTokenMetadata(tokenAddress: Address | undefined) {
+  const queryEnabled = getTokenQueryEnabled(tokenAddress, undefined);
+  
   const {
     data: name,
     isLoading: nameLoading,
@@ -12,7 +15,7 @@ export function useTokenMetadata(tokenAddress: Address | undefined) {
     abi: ERC20_ABI,
     functionName: 'name',
     query: {
-      enabled: !!tokenAddress && tokenAddress !== '0x0000000000000000000000000000000000000000',
+      enabled: queryEnabled,
     },
   });
 
@@ -25,7 +28,7 @@ export function useTokenMetadata(tokenAddress: Address | undefined) {
     abi: ERC20_ABI,
     functionName: 'symbol',
     query: {
-      enabled: !!tokenAddress && tokenAddress !== '0x0000000000000000000000000000000000000000',
+      enabled: queryEnabled,
     },
   });
 
@@ -38,7 +41,7 @@ export function useTokenMetadata(tokenAddress: Address | undefined) {
     abi: ERC20_ABI,
     functionName: 'decimals',
     query: {
-      enabled: !!tokenAddress && tokenAddress !== '0x0000000000000000000000000000000000000000',
+      enabled: queryEnabled,
     },
   });
 

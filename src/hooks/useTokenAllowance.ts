@@ -1,6 +1,6 @@
 import { useReadContract, useAccount } from 'wagmi';
 import { Address, parseUnits } from 'viem';
-import { ERC20_ABI } from '@/config/citadel-contracts';
+import { ERC20_ABI } from '@/abi/erc20';
 
 export function useTokenAllowance(
   tokenAddress: Address | undefined,

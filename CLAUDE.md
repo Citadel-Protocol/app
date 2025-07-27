@@ -197,3 +197,136 @@ const processedLPInfo: LPInfo = {
 - **Responsive Layout**: Grid system adapts to different screen sizes
 
 The frontend is structured to directly consume your `LPInfo` struct with minimal data transformation, making integration straightforward when you connect real contract data.
+
+---
+
+# 🚨 CRITICAL DEVELOPMENT BEST PRACTICES
+
+## ⚠️ MANDATORY: Delete Unused Components & Files
+
+**ALWAYS clean up when adding new features:**
+
+### 1. **Before Creating New Components**
+- Check if similar functionality already exists
+- Use existing components from `src/components/ui/` when possible
+- Extend existing hooks rather than creating duplicates
+
+### 2. **After Creating New Features**
+- **DELETE** any old/unused components that were replaced
+- **DELETE** deprecated hooks or utilities  
+- **DELETE** unused imports and dependencies
+- **UPDATE** all references to use new components
+
+### 3. **File Cleanup Checklist** 
+```bash
+# When creating new features, ALWAYS:
+✅ Remove old component files
+✅ Delete unused hooks
+✅ Clean up imports across all files
+✅ Remove duplicate utility functions
+✅ Delete old test files if applicable
+```
+
+## 📁 **Organized Architecture (Follow This Structure)**
+
+```
+src/
+├── abi/                    # Contract ABIs (centralized)
+├── constants/              # Hardcoded values, addresses
+├── types/                  # TypeScript interfaces & types
+├── utils/                  # Reusable utility functions
+├── hooks/                  # Custom React hooks
+├── components/
+│   ├── ui/                # Reusable UI components
+│   └── [feature]/         # Feature-specific components
+└── config/                # Configuration files
+```
+
+## 🎯 **Code Quality Standards**
+
+### Import Best Practices
+```typescript
+// ✅ GOOD - Use centralized imports
+import type { Token, LPInfo } from '@/types/contracts'
+import { ERC20_ABI } from '@/abi/erc20'
+import { formatCurrency } from '@/utils/formatting'
+
+// ❌ BAD - Scattered imports
+import { Token } from '@/config/tokens'
+import { ERC20_ABI } from '@/config/citadel-contracts'
+```
+
+### Component Reusability
+```typescript
+// ✅ GOOD - Use reusable components
+<AmountInput 
+  value={amount} 
+  onChange={setAmount} 
+  variant="deposit"
+  maxBalance={balance}
+/>
+
+// ❌ BAD - Duplicate input logic everywhere
+<input type="number" /* ... lots of repeated code */ />
+```
+
+### Hook Optimization
+```typescript
+// ✅ GOOD - Optimized, centralized hooks
+import { useTokenBalance } from '@/hooks/useOptimizedTokenBalance'
+
+// ❌ BAD - Multiple similar hooks
+import { useTokenBalance } from '@/hooks/useTokenBalance'
+import { useTokenBalances } from '@/hooks/useTokenBalances'
+```
+
+## 🧹 **Refactoring Rules**
+
+1. **Never leave dead code** - Delete unused files immediately
+2. **Consolidate duplicates** - Merge similar components/hooks
+3. **Centralize constants** - No hardcoded values in components  
+4. **Use utilities** - Extract formatting/helper functions
+5. **Type everything** - Use proper TypeScript interfaces
+
+## 🔄 **When Adding New Features**
+
+### Step 1: Plan & Assess
+- Check existing codebase for similar functionality
+- Identify components/hooks that can be reused
+- Plan what will be deprecated/removed
+
+### Step 2: Implement
+- Use existing utilities and components
+- Follow established patterns and architecture
+- Import from centralized locations
+
+### Step 3: Clean Up (CRITICAL!)
+- **DELETE** all files that are no longer used
+- Update imports across entire codebase  
+- Remove deprecated functionality
+- Test that nothing is broken
+
+### Step 4: Verify
+- Run build to ensure no broken imports
+- Check that all pages still load correctly
+- Verify no unused files remain
+
+## 🚫 **Common Mistakes to Avoid**
+
+- ❌ Creating duplicate components instead of reusing existing ones
+- ❌ Leaving old files "just in case" - DELETE THEM
+- ❌ Hardcoding values instead of using constants
+- ❌ Creating separate hooks for similar functionality
+- ❌ Not updating imports when refactoring
+- ❌ Forgetting to clean up after feature completion
+
+## ✅ **Success Criteria**
+
+Your code is properly maintained when:
+- No duplicate functionality exists
+- All imports come from centralized locations
+- Utility functions are reused across components
+- Old/unused files are completely removed
+- Code follows consistent patterns and architecture
+
+**Remember: Clean code today prevents technical debt tomorrow!**

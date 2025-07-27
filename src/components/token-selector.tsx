@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { ChevronDown, Search, X } from "lucide-react"
-import { Token } from '@/config/tokens'
-import { useTokenBalance } from '@/hooks/useTokenBalance'
+import type { Token } from '@/types/contracts'
+import { useTokenBalance } from '@/hooks/useOptimizedTokenBalance'
 
 interface TokenWithBalance extends Token {
   balance: string

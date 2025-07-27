@@ -1,13 +1,6 @@
-import { Address } from 'viem';
 import { CONTRACT_ADDRESSES } from './contracts';
-
-export interface Token {
-  address: Address;
-  name: string;
-  symbol: string;
-  decimals: number;
-  logoURI?: string;
-}
+import { CITADEL_EUR_ADDRESS } from '@/constants/addresses';
+import type { Token } from '@/types/contracts';
 
 // FDUSD token only
 export const BSC_TOKENS: Token[] = [
@@ -22,7 +15,7 @@ export const BSC_TOKENS: Token[] = [
 // cEUR token only
 export const CITADEL_SYNTHETIC_TOKENS: Token[] = [
   {
-    address: '0x0B5e46027B856E6109E9817C37ddaB1796331E56',
+    address: CITADEL_EUR_ADDRESS,
     name: 'Citadel EUR',
     symbol: 'cEUR',
     decimals: 18,

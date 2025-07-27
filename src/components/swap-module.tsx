@@ -4,15 +4,16 @@ import { useState, useMemo, useEffect } from "react"
 import { ArrowUpDown, Settings, Info } from "lucide-react"
 import { TokenSelector } from "./token-selector"
 import { SwapButton } from "./swap-button"
-import { Token } from '@/config/tokens'
+import type { Token } from '@/types/contracts'
 import { ALL_TOKENS } from '@/config/tokens'
-import { useTokenBalance } from '@/hooks/useTokenBalance'
+import { useTokenBalance } from '@/hooks/useOptimizedTokenBalance'
 import { useCitadelPricing } from '@/hooks/useCitadelPricing'
 import { useCitadelSwap } from '@/hooks/useCitadelSwap'
 import { useTransactionHistory } from '@/hooks/useTransactionHistory'
 import { useErrorHandler } from '@/hooks/useErrorHandler'
 import { useTokenAllowance } from '@/hooks/useTokenAllowance'
-import { findCitadelPoolByTokens, isMintOperation } from '@/config/citadel-contracts'
+import { findCitadelPoolByTokens, isMintOperation } from '@/utils/contract-helpers'
+import { CITADEL_POOLS } from '@/config/citadel-contracts'
 import { Alert } from './ui/alert'
 
 function TokenBalanceDisplay({ token, onMaxClick }: { token: Token; onMaxClick?: (balance: string) => void }) {
@@ -47,7 +48,7 @@ export function SwapModule() {
 
   // Find the Citadel pool for the selected token pair
   const citadelPool = useMemo(() => 
-    findCitadelPoolByTokens(fromToken.address, toToken.address), 
+    findCitadelPoolByTokens(CITADEL_POOLS, fromToken.address, toToken.address), 
     [fromToken.address, toToken.address]
   );
 

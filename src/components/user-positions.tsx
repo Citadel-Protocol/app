@@ -1,7 +1,8 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import type { PoolVault } from "./pools-module"
+import type { PoolVault } from "@/types/contracts"
+import { formatCurrency } from "@/utils/formatting"
 
 interface UserPositionsProps {
   pools: PoolVault[]
@@ -18,7 +19,7 @@ export function UserPositions({ pools, onViewDetails }: UserPositionsProps) {
         <h2 className="text-2xl font-bold text-white mb-4">Portfolio Overview</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-white mb-2">${totalValue.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-white mb-2">{formatCurrency(totalValue)}</div>
             <div className="text-white/60">Total Value</div>
           </div>
           <div className="text-center">
@@ -50,7 +51,7 @@ export function UserPositions({ pools, onViewDetails }: UserPositionsProps) {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-xl font-bold text-white">${pool.userPosition?.value.toLocaleString()}</div>
+                <div className="text-xl font-bold text-white">{formatCurrency(pool.userPosition?.value || 0)}</div>
                 <div className="flex items-center gap-1 text-green-400">
                   <TrendingUp className="w-4 h-4" />
                   <span className="text-sm">+5.2%</span>
@@ -63,7 +64,7 @@ export function UserPositions({ pools, onViewDetails }: UserPositionsProps) {
               <div className="bg-white/5 rounded-xl p-3">
                 <div className="text-sm text-white/60 mb-1">Collateral</div>
                 <div className="text-lg font-semibold text-white">
-                  ${pool.userPosition?.lpInfo.actualCollateralAmount.toLocaleString()}
+                  {formatCurrency(pool.userPosition?.lpInfo.actualCollateralAmount || 0)}
                 </div>
               </div>
               <div className="bg-white/5 rounded-xl p-3">
@@ -77,7 +78,7 @@ export function UserPositions({ pools, onViewDetails }: UserPositionsProps) {
               <div className="bg-white/5 rounded-xl p-3">
                 <div className="text-sm text-white/60 mb-1">Capacity</div>
                 <div className="text-lg font-semibold text-white">
-                  ${pool.userPosition?.lpInfo.capacity.toLocaleString()}
+                  {formatCurrency(pool.userPosition?.lpInfo.capacity || 0)}
                 </div>
               </div>
             </div>

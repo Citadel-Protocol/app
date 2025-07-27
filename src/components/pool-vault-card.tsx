@@ -4,8 +4,10 @@ import { useState } from "react"
 import { useAccount } from "wagmi"
 import { TrendingUp, Shield, AlertTriangle, Plus, Minus } from "lucide-react"
 import { formatUnits } from "viem"
-import type { PoolVault } from "./pools-module"
+import type { PoolVault } from "@/types/contracts"
 import { useVaultDeposit, useVaultWithdraw, useCollateralApproval, useVaultBalances } from "@/hooks/useVaultOperations"
+import { AmountInput } from "@/components/ui/amount-input"
+import { formatCompactNumber } from "@/utils/formatting"
 
 interface PoolVaultCardProps {
   pool: PoolVault
@@ -44,13 +46,6 @@ export function PoolVaultCard({ pool, onViewDetails }: PoolVaultCardProps) {
     withdraw(withdrawAmount, address)
   }
 
-  const setMaxBalance = (type: "deposit" | "withdraw") => {
-    if (type === "deposit" && collateralBalance) {
-      setDepositAmount(formatUnits(collateralBalance, 18))
-    } else if (type === "withdraw" && lpTokenBalance) {
-      setWithdrawAmount(formatUnits(lpTokenBalance, 18))
-    }
-  }
   const getRiskColor = (risk: string) => {
     switch (risk) {
       case "Low":
@@ -103,7 +98,7 @@ export function PoolVaultCard({ pool, onViewDetails }: PoolVaultCardProps) {
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
           <div className="text-sm text-white/60 mb-1">TVL</div>
-          <div className="text-lg font-bold text-white">${(pool.tvl / 1000000).toFixed(1)}M</div>
+          <div className="text-lg font-bold text-white">${formatCompactNumber(pool.tvl)}</div>
         </div>
         <div>
           <div className="text-sm text-white/60 mb-1">APY</div>
@@ -170,35 +165,14 @@ export function PoolVaultCard({ pool, onViewDetails }: PoolVaultCardProps) {
           {/* Input Section */}
           {activeTab === "deposit" ? (
             <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">Amount to deposit</span>
-                <span className="text-white/60">
-                  Balance: {collateralBalance ? Number(formatUnits(collateralBalance, 18)).toFixed(2) : "0"} FDUSD
-                </span>
-              </div>
-              <div className="relative">
-                <input
-                  type="number"
-                  value={depositAmount}
-                  onChange={(e) => setDepositAmount(e.target.value)}
-                  placeholder="0.0"
-                  className="w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-white placeholder-white/40 focus:border-blue-500/50 focus:outline-none"
-                />
-                <button
-                  onClick={() => setMaxBalance("deposit")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 text-sm hover:text-blue-300"
-                >
-                  MAX
-                </button>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max={collateralBalance ? formatUnits(collateralBalance, 18) : "100"}
-                step="0.01"
+              <AmountInput
                 value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
-                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
+                onChange={setDepositAmount}
+                maxBalance={collateralBalance}
+                symbol="FDUSD"
+                label="Amount to deposit"
+                variant="deposit"
+                disabled={isDepositPending || isApprovePending}
               />
               <button
                 onClick={handleDeposit}
@@ -216,35 +190,14 @@ export function PoolVaultCard({ pool, onViewDetails }: PoolVaultCardProps) {
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-white/60">LP tokens to withdraw</span>
-                <span className="text-white/60">
-                  Balance: {lpTokenBalance ? Number(formatUnits(lpTokenBalance, 18)).toFixed(2) : "0"} LP
-                </span>
-              </div>
-              <div className="relative">
-                <input
-                  type="number"
-                  value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(e.target.value)}
-                  placeholder="0.0"
-                  className="w-full bg-white/5 border border-white/20 rounded-lg py-3 px-4 text-white placeholder-white/40 focus:border-red-500/50 focus:outline-none"
-                />
-                <button
-                  onClick={() => setMaxBalance("withdraw")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 text-sm hover:text-red-300"
-                >
-                  MAX
-                </button>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max={lpTokenBalance ? formatUnits(lpTokenBalance, 18) : "100"}
-                step="0.01"
+              <AmountInput
                 value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
+                onChange={setWithdrawAmount}
+                maxBalance={lpTokenBalance}
+                symbol="LP"
+                label="LP tokens to withdraw"
+                variant="withdraw"
+                disabled={isWithdrawPending}
               />
               <button
                 onClick={handleWithdraw}

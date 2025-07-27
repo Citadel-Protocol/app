@@ -5,39 +5,7 @@ import { PoolVaultCard } from "./pool-vault-card"
 import { PoolDetailsModal } from "./pool-details-modal"
 import { UserPositions } from "./user-positions"
 import { usePoolsData } from "@/hooks/usePoolsData"
-
-export interface LPInfo {
-  actualCollateralAmount: number
-  tokensCollateralized: number
-  overCollateralization: number
-  capacity: number
-  utilization: number
-  coverage: number
-  mintShares: number
-  redeemShares: number
-  interestShares: number
-  isOvercollateralized: boolean
-}
-
-export interface PoolVault {
-  id: string
-  name: string
-  baseToken: string
-  synthToken: string
-  baseIcon: string
-  synthIcon: string
-  tvl: number
-  apy: number
-  address: string
-  userPosition?: {
-    amount: number
-    value: number
-    lpInfo: LPInfo
-  }
-  lpInfo: LPInfo
-  riskLevel: "Low" | "Medium" | "High"
-  description: string
-}
+import type { PoolVault } from "@/types/contracts"
 
 
 export function PoolsModule() {

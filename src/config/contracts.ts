@@ -1,28 +1,6 @@
 import { Address } from 'viem';
 import testnetAddresses from '../../testnet-addresses.json';
-
-export interface ContractAddresses {
-  chainlinkPriceFeed: Address;
-  collateralWhitelist: Address;
-  collateral: Address;
-  compoundModule: Address;
-  deployer: Address;
-  factoryVersioning: Address;
-  finder: Address;
-  identifierWhitelist: Address;
-  lendingManager: Address;
-  lendingStorageManager: Address;
-  manager: Address;
-  pool: Address;
-  poolFactory: Address;
-  poolImplementation: Address;
-  poolRegistry: Address;
-  priceFeed: Address;
-  pythAggregator: Address;
-  tokenFactory: Address;
-  trustedForwarder: Address;
-  faucetLimiter: Address;
-}
+import type { ContractAddresses } from '@/types/contracts';
 
 export const CONTRACT_ADDRESSES: ContractAddresses = {
   chainlinkPriceFeed: testnetAddresses.contracts.chainlinkPriceFeed.address as Address,
