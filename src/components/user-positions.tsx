@@ -69,11 +69,11 @@ export function UserPositions({ pools, onViewDetails }: UserPositionsProps) {
               </div>
               <div className="bg-white/5 rounded-xl p-3">
                 <div className="text-sm text-white/60 mb-1">Utilization</div>
-                <div className="text-lg font-semibold text-white">{pool.userPosition?.lpInfo.utilization}%</div>
+                <div className="text-lg font-semibold text-white">{pool.userPosition?.lpInfo.utilization.toFixed(2)}%</div>
               </div>
               <div className="bg-white/5 rounded-xl p-3">
                 <div className="text-sm text-white/60 mb-1">Coverage</div>
-                <div className="text-lg font-semibold text-white">{pool.userPosition?.lpInfo.coverage}%</div>
+                <div className="text-lg font-semibold text-white">{pool.userPosition?.lpInfo.coverage.toFixed(2)}%</div>
               </div>
               <div className="bg-white/5 rounded-xl p-3">
                 <div className="text-sm text-white/60 mb-1">Capacity</div>

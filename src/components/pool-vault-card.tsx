@@ -102,7 +102,7 @@ export function PoolVaultCard({ pool, onViewDetails }: PoolVaultCardProps) {
         </div>
         <div>
           <div className="text-sm text-white/60 mb-1">APY</div>
-          <div className="text-lg font-bold text-green-400">{pool.apy}%</div>
+          <div className="text-lg font-bold text-green-400">{pool.apy.toFixed(4)}%</div>
         </div>
       </div>
 
@@ -110,7 +110,7 @@ export function PoolVaultCard({ pool, onViewDetails }: PoolVaultCardProps) {
       <div className="mb-4">
         <div className="flex justify-between text-sm text-white/80 mb-2">
           <span>Utilization</span>
-          <span>{pool.lpInfo.utilization}%</span>
+          <span>{pool.lpInfo.utilization.toFixed(4)}%</span>
         </div>
         <div className="w-full bg-white/10 rounded-full h-2">
           <div

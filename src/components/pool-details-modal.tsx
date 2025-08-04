@@ -2,6 +2,10 @@
 
 import { X, TrendingUp, Shield, AlertCircle, Info } from "lucide-react"
 import type { PoolVault } from "./pools-module"
+import { FeeBreakdown } from "./fee-breakdown"
+import { useLendingManager } from "@/hooks/useLendingManager"
+import { formatUnits } from "viem"
+import testnetAddresses from "../../testnet-addresses.json"
 
 interface PoolDetailsModalProps {
   pool: PoolVault
@@ -10,6 +14,8 @@ interface PoolDetailsModalProps {
 
 export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
   const lpInfo = pool.userPosition?.lpInfo || pool.lpInfo
+  const lendingData = useLendingManager(testnetAddresses.contracts.pool.address)
+  const poolInterest = lendingData.data ? Number(formatUnits(lendingData.data[0], 18)) : 0
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -40,7 +46,7 @@ export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
             </div>
             <div className="bg-white/5 rounded-xl p-4">
               <div className="text-sm text-white/60 mb-2">APY</div>
-              <div className="text-2xl font-bold text-green-400">{pool.apy}%</div>
+              <div className="text-2xl font-bold text-green-400">{pool.apy.toFixed(4)}%</div>
             </div>
             <div className="bg-white/5 rounded-xl p-4">
               <div className="text-sm text-white/60 mb-2">Risk Level</div>
@@ -88,7 +94,7 @@ export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
               {/* Utilization */}
               <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <div className="text-sm text-white/60 mb-2">Utilization Ratio</div>
-                <div className="text-xl font-bold text-white mb-2">{lpInfo.utilization}%</div>
+                <div className="text-xl font-bold text-white mb-2">{lpInfo.utilization.toFixed(2)}%</div>
                 <div className="w-full bg-white/10 rounded-full h-2">
                   <div
                     className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full"
@@ -100,7 +106,7 @@ export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
               {/* Coverage */}
               <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <div className="text-sm text-white/60 mb-2">Collateral Coverage</div>
-                <div className="text-xl font-bold text-white mb-2">{lpInfo.coverage}%</div>
+                <div className="text-xl font-bold text-white mb-2">{lpInfo.coverage.toFixed(2)}%</div>
                 <div className="w-full bg-white/10 rounded-full h-2">
                   <div
                     className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full"
@@ -109,24 +115,12 @@ export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
                 </div>
               </div>
 
-              {/* Shares Distribution */}
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                <div className="text-sm text-white/60 mb-2">Shares Distribution</div>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/80">Mint</span>
-                    <span className="text-white">{lpInfo.mintShares}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/80">Redeem</span>
-                    <span className="text-white">{lpInfo.redeemShares}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/80">Interest</span>
-                    <span className="text-white">{lpInfo.interestShares}%</span>
-                  </div>
-                </div>
-              </div>
+              {/* Fee Breakdown */}
+              <FeeBreakdown 
+                lpInfo={lpInfo} 
+                poolInterest={poolInterest}
+                className="md:col-span-2"
+              />
             </div>
           </div>
 
