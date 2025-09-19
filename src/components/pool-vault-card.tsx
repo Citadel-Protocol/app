@@ -1,12 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useAccount } from "wagmi"
-import { TrendingUp, Shield, AlertTriangle, Plus, Minus } from "lucide-react"
-import { formatUnits } from "viem"
+import { TrendingUp, Shield, AlertTriangle } from "lucide-react"
 import type { PoolVault } from "@/types/contracts"
-import { useVaultDeposit, useVaultWithdraw, useCollateralApproval, useVaultBalances } from "@/hooks/useVaultOperations"
-import { AmountInput } from "@/components/ui/amount-input"
 import { formatCompactNumber } from "@/utils/formatting"
 
 interface PoolVaultCardProps {
@@ -15,36 +10,6 @@ interface PoolVaultCardProps {
 }
 
 export function PoolVaultCard({ pool, onViewDetails }: PoolVaultCardProps) {
-  const { address } = useAccount()
-  const [depositAmount, setDepositAmount] = useState("")
-  const [withdrawAmount, setWithdrawAmount] = useState("")
-  const [activeTab, setActiveTab] = useState<"deposit" | "withdraw">("deposit")
-
-  const { deposit, isPending: isDepositPending, isConfirmed: isDepositConfirmed } = useVaultDeposit(pool.address as `0x${string}`)
-  const { withdraw, isPending: isWithdrawPending, isConfirmed: isWithdrawConfirmed } = useVaultWithdraw(pool.address as `0x${string}`)
-  const { approve, needsApproval, isPending: isApprovePending, isConfirmed: isApproveConfirmed } = useCollateralApproval(
-    pool.address as `0x${string}`, 
-    address as `0x${string}`
-  )
-  const { collateralBalance, lpTokenBalance } = useVaultBalances(
-    pool.address as `0x${string}`, 
-    address as `0x${string}`
-  )
-
-  const handleDeposit = async () => {
-    if (!address || !depositAmount) return
-    
-    if (needsApproval && needsApproval(depositAmount)) {
-      approve(depositAmount)
-    } else {
-      deposit(depositAmount, address)
-    }
-  }
-
-  const handleWithdraw = () => {
-    if (!address || !withdrawAmount) return
-    withdraw(withdrawAmount, address)
-  }
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
@@ -133,98 +98,13 @@ export function PoolVaultCard({ pool, onViewDetails }: PoolVaultCardProps) {
       {/* Description */}
       <p className="text-sm text-white/60 mb-4">{pool.description}</p>
 
-      {/* Liquidity Management */}
-      {address ? (
-        <div className="space-y-4">
-          {/* Tab Buttons */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setActiveTab("deposit")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                activeTab === "deposit"
-                  ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                  : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
-              }`}
-            >
-              <Plus className="w-4 h-4" />
-              Add Liquidity
-            </button>
-            <button
-              onClick={() => setActiveTab("withdraw")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                activeTab === "withdraw"
-                  ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                  : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
-              }`}
-            >
-              <Minus className="w-4 h-4" />
-              Remove Liquidity
-            </button>
-          </div>
-
-          {/* Input Section */}
-          {activeTab === "deposit" ? (
-            <div className="space-y-3">
-              <AmountInput
-                value={depositAmount}
-                onChange={setDepositAmount}
-                maxBalance={collateralBalance}
-                symbol="FDUSD"
-                label="Amount to deposit"
-                variant="deposit"
-                disabled={isDepositPending || isApprovePending}
-              />
-              <button
-                onClick={handleDeposit}
-                disabled={!depositAmount || isDepositPending || isApprovePending}
-                className="w-full bg-gradient-to-r from-green-500/20 to-green-600/20 hover:from-green-500/30 hover:to-green-600/30 border border-green-500/30 text-green-400 font-semibold py-3 px-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isApprovePending
-                  ? "Approving..."
-                  : isDepositPending
-                  ? "Depositing..."
-                  : needsApproval && needsApproval(depositAmount)
-                  ? "Approve FDUSD"
-                  : "Provide Liquidity"}
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <AmountInput
-                value={withdrawAmount}
-                onChange={setWithdrawAmount}
-                maxBalance={lpTokenBalance}
-                symbol="LP"
-                label="LP tokens to withdraw"
-                variant="withdraw"
-                disabled={isWithdrawPending}
-              />
-              <button
-                onClick={handleWithdraw}
-                disabled={!withdrawAmount || isWithdrawPending}
-                className="w-full bg-gradient-to-r from-red-500/20 to-red-600/20 hover:from-red-500/30 hover:to-red-600/30 border border-red-500/30 text-red-400 font-semibold py-3 px-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isWithdrawPending ? "Withdrawing..." : "Remove Liquidity"}
-              </button>
-            </div>
-          )}
-          
-          {/* View Details Button */}
-          <button
-            onClick={onViewDetails}
-            className="w-full bg-gradient-to-r from-blue-500/10 to-purple-600/10 hover:from-blue-500/20 hover:to-purple-600/20 border border-white/10 text-white/80 font-medium py-2 px-4 rounded-lg transition-all duration-300 text-sm"
-          >
-            View Detailed Analytics
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={onViewDetails}
-          className="w-full bg-gradient-to-r from-blue-500/20 to-purple-600/20 hover:from-blue-500/30 hover:to-purple-600/30 border border-white/20 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 group-hover:border-white/30"
-        >
-          Connect Wallet to Provide Liquidity
-        </button>
-      )}
+      {/* View Details Button */}
+      <button
+        onClick={onViewDetails}
+        className="w-full bg-gradient-to-r from-blue-500/20 to-purple-600/20 hover:from-blue-500/30 hover:to-purple-600/30 border border-white/20 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 group-hover:border-white/30"
+      >
+        View Pool Details
+      </button>
     </div>
   )
 }

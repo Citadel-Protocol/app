@@ -1,9 +1,14 @@
 "use client"
 
-import { X, TrendingUp, Shield, AlertCircle, Info } from "lucide-react"
+import { useState } from "react"
+import { useAccount } from "wagmi"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { X, TrendingUp, Shield, AlertCircle, Info, Plus, Minus } from "lucide-react"
 import type { PoolVault } from "./pools-module"
 import { FeeBreakdown } from "./fee-breakdown"
 import { useLendingManager } from "@/hooks/useLendingManager"
+import { useVaultDeposit, useVaultWithdraw, useCollateralApproval, useVaultBalances } from "@/hooks/useVaultOperations"
+import { AmountInput } from "@/components/ui/amount-input"
 import { formatUnits } from "viem"
 import testnetAddresses from "../../testnet-addresses.json"
 
@@ -13,9 +18,40 @@ interface PoolDetailsModalProps {
 }
 
 export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
+  const { address } = useAccount()
+  const [depositAmount, setDepositAmount] = useState("")
+  const [withdrawAmount, setWithdrawAmount] = useState("")
+  const [activeTab, setActiveTab] = useState<"deposit" | "withdraw">("deposit")
+
   const lpInfo = pool.userPosition?.lpInfo || pool.lpInfo
   const lendingData = useLendingManager(testnetAddresses.contracts.pool.address)
   const poolInterest = lendingData.data ? Number(formatUnits(lendingData.data[0], 18)) : 0
+
+  const { deposit, isPending: isDepositPending, isConfirmed: isDepositConfirmed } = useVaultDeposit(pool.address as `0x${string}`)
+  const { withdraw, isPending: isWithdrawPending, isConfirmed: isWithdrawConfirmed } = useVaultWithdraw(pool.address as `0x${string}`)
+  const { approve, needsApproval, isPending: isApprovePending, isConfirmed: isApproveConfirmed } = useCollateralApproval(
+    pool.address as `0x${string}`,
+    address as `0x${string}`
+  )
+  const { collateralBalance, lpTokenBalance } = useVaultBalances(
+    pool.address as `0x${string}`,
+    address as `0x${string}`
+  )
+
+  const handleDeposit = async () => {
+    if (!address || !depositAmount) return
+
+    if (needsApproval && needsApproval(depositAmount)) {
+      approve(depositAmount)
+    } else {
+      deposit(depositAmount, address)
+    }
+  }
+
+  const handleWithdraw = () => {
+    if (!address || !withdrawAmount) return
+    withdraw(withdrawAmount, address)
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -29,7 +65,7 @@ export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-white">{pool.name}</h2>
-              <p className="text-white/60">{pool.description}</p>
+              <p className="text-white/60 hidden sm:block">{pool.description}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/10 transition-colors">
@@ -145,23 +181,97 @@ export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex gap-4">
-            {pool.userPosition ? (
-              <>
-                <button className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300">
+          {/* Liquidity Management */}
+          {address ? (
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-white mb-4">Liquidity Management</h3>
+
+              {/* Tab Buttons */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActiveTab("deposit")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                    activeTab === "deposit"
+                      ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                      : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                  }`}
+                >
+                  <Plus className="w-4 h-4" />
                   Add Liquidity
                 </button>
-                <button className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300">
+                <button
+                  onClick={() => setActiveTab("withdraw")}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-medium transition-all ${
+                    activeTab === "withdraw"
+                      ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                      : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                  }`}
+                >
+                  <Minus className="w-4 h-4" />
                   Remove Liquidity
                 </button>
-              </>
-            ) : (
-              <button className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300">
-                Provide Liquidity
+              </div>
+
+              {/* Input Section */}
+              {activeTab === "deposit" ? (
+                <div className="space-y-4">
+                  <AmountInput
+                    value={depositAmount}
+                    onChange={setDepositAmount}
+                    maxBalance={collateralBalance}
+                    symbol="FDUSD"
+                    label="Amount to deposit"
+                    variant="deposit"
+                    disabled={isDepositPending || isApprovePending}
+                  />
+                  <button
+                    onClick={handleDeposit}
+                    disabled={!depositAmount || isDepositPending || isApprovePending}
+                    className="w-full bg-gradient-to-r from-green-500/20 to-green-600/20 hover:from-green-500/30 hover:to-green-600/30 border border-green-500/30 text-green-400 font-semibold py-3 px-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isApprovePending
+                      ? "Approving..."
+                      : isDepositPending
+                      ? "Depositing..."
+                      : needsApproval && needsApproval(depositAmount)
+                      ? "Approve FDUSD"
+                      : "Provide Liquidity"}
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <AmountInput
+                    value={withdrawAmount}
+                    onChange={setWithdrawAmount}
+                    maxBalance={lpTokenBalance}
+                    symbol="LP"
+                    label="LP tokens to withdraw"
+                    variant="withdraw"
+                    disabled={isWithdrawPending}
+                  />
+                  <button
+                    onClick={handleWithdraw}
+                    disabled={!withdrawAmount || isWithdrawPending}
+                    className="w-full bg-gradient-to-r from-red-500/20 to-red-600/20 hover:from-red-500/30 hover:to-red-600/30 border border-red-500/30 text-red-400 font-semibold py-3 px-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isWithdrawPending ? "Withdrawing..." : "Remove Liquidity"}
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <h3 className="text-xl font-bold text-white mb-4">Liquidity Management</h3>
+              <p className="text-white/60 mb-4">Connect your wallet to manage liquidity positions</p>
+              <ConnectButton.Custom>
+                {({openConnectModal}) => 
+              <button onClick={openConnectModal} className="bg-gradient-to-r from-blue-500/20 to-purple-600/20 hover:from-blue-500/30 hover:to-purple-600/30 border border-white/20 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300">
+                Connect Wallet
               </button>
-            )}
-          </div>
+                }
+              </ConnectButton.Custom>
+            </div>
+          )}
         </div>
       </div>
     </div>
