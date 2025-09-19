@@ -76,11 +76,9 @@ export function AmountInput({
       {(label || maxBalance) && (
         <div className="flex justify-between text-sm">
           {label && <span className="text-white/60">{label}</span>}
-          {maxBalance && (
             <span className="text-white/60">
               Balance: {formattedMaxBalance} {symbol}
             </span>
-          )}
         </div>
       )}
 
@@ -101,7 +99,7 @@ export function AmountInput({
             ${disabled ? "opacity-50 cursor-not-allowed" : ""}
           `}
         />
-        {maxBalance && (
+        {!!maxBalance && (
           <button
             type="button"
             onClick={setMaxBalance}
@@ -118,7 +116,7 @@ export function AmountInput({
       </div>
 
       {/* Percentage Buttons */}
-      {maxBalance && !disabled && (
+      {!!maxBalance && !disabled && (
         <div className="flex gap-2">
           {[25, 50, 75, 100].map((percentage) => (
             <button
@@ -134,7 +132,7 @@ export function AmountInput({
       )}
 
       {/* Range Slider */}
-      {maxBalance && !disabled && (
+      {!!maxBalance && !disabled && (
         <input
           type="range"
           min="0"

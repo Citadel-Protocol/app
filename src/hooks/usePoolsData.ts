@@ -70,7 +70,7 @@ export function usePoolsData(): PoolVault[] {
   const vault20xRate = useVaultRate(VAULT_ADDRESSES.vault20x)
   
   const lendingData = useLendingManager(POOL_ADDRESS)
-
+  
   return useMemo(() => {
     const vault1xLPInfo = formatLPInfo(vault1xData.data)
     const vault5xLPInfo = formatLPInfo(vault5xData.data)
