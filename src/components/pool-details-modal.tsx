@@ -124,7 +124,7 @@ export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
               {/* Capacity */}
               <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                 <div className="text-sm text-white/60 mb-2">LP Capacity</div>
-                <div className="text-xl font-bold text-white">${lpInfo.capacity.toLocaleString()}</div>
+                <div className="text-xl font-bold text-white">{lpInfo.capacity.toLocaleString()} cEUR</div>
               </div>
 
               {/* Utilization */}
