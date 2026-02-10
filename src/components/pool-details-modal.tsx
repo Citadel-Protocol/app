@@ -10,7 +10,7 @@ import { useLendingManager } from "@/hooks/useLendingManager"
 import { useVaultDeposit, useVaultWithdraw, useCollateralApproval, useVaultBalances } from "@/hooks/useVaultOperations"
 import { AmountInput } from "@/components/ui/amount-input"
 import { formatUnits } from "viem"
-import testnetAddresses from "../../testnet-addresses.json"
+import { CONTRACT_ADDRESSES } from "@/config/contracts"
 
 interface PoolDetailsModalProps {
   pool: PoolVault
@@ -24,7 +24,7 @@ export function PoolDetailsModal({ pool, onClose }: PoolDetailsModalProps) {
   const [activeTab, setActiveTab] = useState<"deposit" | "withdraw">("deposit")
 
   const lpInfo = pool.userPosition?.lpInfo || pool.lpInfo
-  const lendingData = useLendingManager(testnetAddresses.contracts.pool.address)
+  const lendingData = useLendingManager(CONTRACT_ADDRESSES.pool)
   const poolInterest = lendingData.data ? Number(formatUnits(lendingData.data[0], 18)) : 0
 
   const { deposit, isPending: isDepositPending, isConfirmed: isDepositConfirmed } = useVaultDeposit(pool.address as `0x${string}`)

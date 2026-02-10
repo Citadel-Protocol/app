@@ -1,7 +1,8 @@
 import { WebGLBackground } from "@/components/webgl-background"
 import { Navbar } from "@/components/navbar"
 import { SwapModule } from "@/components/swap-module"
-import { FaucetCard } from "@/components/faucet-card"
+// TESTNET ONLY - Commented for mainnet
+// import { FaucetCard } from "@/components/faucet-card"
 
 export default function SwapPage() {
   return (
@@ -18,7 +19,8 @@ export default function SwapPage() {
         <main className="min-h-screen flex items-center justify-center px-4 py-20">
           <div className="w-full max-w-md mx-auto space-y-6">
             <SwapModule />
-            <FaucetCard />
+            {/* TESTNET ONLY - Commented for mainnet */}
+            {/* <FaucetCard /> */}
           </div>
         </main>
       </div>

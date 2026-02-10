@@ -1,7 +1,8 @@
 import { useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi'
 import { Address, parseUnits } from 'viem'
+import { CONTRACT_ADDRESSES } from '@/config/contracts'
 
-const COLLATERAL_ADDRESS = "0xcF27439fA231af9931ee40c4f27Bb77B83826F3C" as Address
+const COLLATERAL_ADDRESS = CONTRACT_ADDRESSES.collateral
 
 const VAULT_ABI = [
   {

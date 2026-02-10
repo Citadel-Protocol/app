@@ -4,15 +4,15 @@ import { useVaultRate } from './useVaultRate'
 import { useLendingManager } from './useLendingManager'
 import { PoolVault, LPInfo } from '@/components/pools-module'
 import { formatUnits } from 'viem'
-import testnetAddresses from '../../testnet-addresses.json'
+import { CONTRACT_ADDRESSES } from '@/config/contracts'
 
 const VAULT_ADDRESSES = {
-  vault1x: testnetAddresses.contracts.vault1x.address,
-  vault5x: testnetAddresses.contracts.vault5x.address,
-  vault20x: testnetAddresses.contracts.vault20x.address
+  vault1x: CONTRACT_ADDRESSES.vault1x,
+  vault5x: CONTRACT_ADDRESSES.vault5x,
+  vault20x: CONTRACT_ADDRESSES.vault20x
 } as const
 
-const POOL_ADDRESS = testnetAddresses.contracts.pool.address
+const POOL_ADDRESS = CONTRACT_ADDRESSES.pool
 
 function formatLPInfo(rawData: any): LPInfo {
   if (!rawData) {

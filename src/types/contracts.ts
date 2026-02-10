@@ -67,8 +67,12 @@ export interface ContractAddresses {
   poolImplementation: Address;
   poolRegistry: Address;
   priceFeed: Address;
-  pythAggregator: Address;
   tokenFactory: Address;
   trustedForwarder: Address;
-  faucetLimiter: Address;
+  vaultImplementation: Address;
+  vaultFactory: Address;
+  vaultRegistry: Address;
+  vault1x: Address;
+  vault5x: Address;
+  vault20x: Address;
 }

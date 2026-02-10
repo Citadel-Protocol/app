@@ -1,8 +1,8 @@
 import { useReadContract } from 'wagmi'
 import { Address } from 'viem'
-import testnetAddresses from '../../testnet-addresses.json'
+import { CONTRACT_ADDRESSES } from '@/config/contracts'
 
-const LENDING_MANAGER_ADDRESS = testnetAddresses.contracts.lendingManager.address as Address
+const LENDING_MANAGER_ADDRESS = CONTRACT_ADDRESSES.lendingManager
 
 const LENDING_MANAGER_ABI = [
   {
